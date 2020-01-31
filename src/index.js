@@ -2,18 +2,22 @@ import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { watch } from 'melanke-watchjs';
 import validator from 'validator';
+import axios from 'axios';
+import { renderInput, renderFeed } from './renderers';
+import parse from './parser';
 
 const state = {
   form: {
     valid: null,
     value: null,
   },
-  links: [],
+  link: [],
+  feed: [],
 };
 
-const isValid = (url) => validator.isURL(url) && !state.links.includes(url);
+const isValid = (url) => validator.isURL(url) && !state.link.includes(url);
 
-const url = document.getElementById('urlRss');
+const url = document.querySelector('#urlRss');
 const button = document.querySelector('#rssButton');
 
 url.addEventListener('input', (e) => {
@@ -23,21 +27,17 @@ url.addEventListener('input', (e) => {
   state.form.valid = isValid(state.form.value);
 });
 
-const render = (appstate) => {
-  const { valid, value } = appstate.form;
-  if (value === null) {
-    url.classList.remove('is-invalid');
-    button.disabled = true;
-  }
-  if (valid) {
-    url.classList.add('is-valid');
-    url.classList.remove('is-invalid');
-    button.disabled = false;
-  } else {
-    url.classList.add('is-invalid');
-    url.classList.remove('is-valid');
-    button.disabled = true;
-  }
-};
+button.addEventListener('click', (e) => {
+  e.preventDefault();
+  const { link, feed } = state;
+  const { value } = state.form;
+  link.push(value);
+  const cors = `https://cors-anywhere.herokuapp.com/${value}`;
+  axios.get(cors).then((response) => feed.push(parse(response.data)))
+    .catch((error) => console.log(error));
+  state.form.value = null;
+  state.form.valid = null;
+});
 
-watch(state.form, () => render(state));
+watch(state.form, () => renderInput(state));
+watch(state, 'feed', () => renderFeed(state.feed));
