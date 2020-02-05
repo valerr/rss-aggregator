@@ -17,20 +17,49 @@ export const renderInput = (appstate) => {
   }
 };
 
-export const renderFeed = (feed) => {
+
+const renderChannel = (channel) => {
+  const {
+    channelTitle, channelDescription, channelLink, postsArr,
+  } = channel;
+  console.log('renderChannel props', channelTitle, channelDescription, channelLink, postsArr);
   const div = document.querySelector('#rssContainer');
+  const divChannel = document.createElement('div');
+  divChannel.classList.add('container');
+  const a = document.createElement('a');
+  a.setAttribute('href', channelLink);
+  a.textContent = channelTitle;
+  const p = document.createElement('p');
+  p.textContent = channelDescription;
+  divChannel.append(a);
+  divChannel.append(p);
+  div.append(divChannel);
+
   const ul = document.createElement('ul');
   ul.classList.add('list-group');
-  feed.forEach((item) => {
+  postsArr.forEach((item) => {
     const li = document.createElement('li');
     li.classList.add('list-group-item');
-    const title = document.createElement('h2');
-    title.textContent = item.title;
+    const title = document.createElement('a');
+    title.setAttribute('href', item.itemLink);
+    title.textContent = item.itemTitle;
     const description = document.createElement('p');
-    description.textContent = item.description;
+    description.textContent = item.itemDescription;
     li.append(title);
     li.append(description);
     ul.append(li);
   });
   div.append(ul);
+};
+
+export const renderFeed = (feed) => {
+  feed.forEach((channel) => {
+    renderChannel(channel);
+  });
+};
+
+export const renderErrorMessage = (state) => {
+  const errorDiv = document.querySelector('#errors');
+  const message = state.form.error ? `<div class="alert alert-primary role="alert">${state.form.error}</div>` : null;
+  errorDiv.innerHTML = message;
 };
