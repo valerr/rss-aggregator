@@ -57,16 +57,13 @@ form.addEventListener('submit', (e) => {
   translate((t) => {
     state.form.notification = t('notifications.loading');
   });
-  const cors = `https://cors-anywhere.herokuapp.com/${value}`;
-  axios.get(cors).then(({ data }) => {
+  axios.get(`https://cors-anywhere.herokuapp.com/${value}`).then(({ data }) => {
     const { channel, postsArr } = parse(data);
 
     state.feeds.push(state.newFeeds);
     state.newFeeds.length = 0;
     state.newFeeds.push(channel);
 
-    state.posts.push(...state.newPosts);
-    state.newPosts.length = 0;
     state.newPosts.unshift(...reverse(postsArr));
     translate((t) => {
       state.form.notification = t('notifications.finished');
