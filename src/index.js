@@ -1,11 +1,14 @@
-import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { watch } from 'melanke-watchjs';
 import validator from 'validator';
 import axios from 'axios';
-import { renderInput, renderFeed, renderErrorMessage } from './renderers';
+import _ from 'lodash';
+import {
+  renderInput, renderFeeds, renderPosts, renderErrorMessage,
+} from './renderers';
 import parse from './parser';
 import translate from './locales/translate';
+import updateFeed from './updateFeed';
 
 const state = {
   form: {
@@ -13,17 +16,17 @@ const state = {
     value: null,
     error: null,
   },
-  channels: [],
-  feed: [],
+  urls: [], // input url
+  feeds: [], // [{ channelTitle, channelDescription, channelLink }, {}, ...]
+  newFeeds: [],
+  posts: [], // [{ feedLink, itemTitle, itemDescription, itemLink }, {}, ...]
+  newPosts: [],
 };
 
-const isValid = (url) => validator.isURL(url) && !state.channels.includes(url);
+const isValid = (url) => validator.isURL(url) && !state.urls.includes(url);
 
-const url = document.querySelector('#urlRss');
-const form = document.querySelector('form');
-
-// let feedId;
-// let postId;
+const url = document.getElementById('urlRss');
+const form = document.getElementById('submitForm');
 
 url.addEventListener('input', (e) => {
   e.preventDefault();
@@ -36,7 +39,7 @@ url.addEventListener('input', (e) => {
       state.form.error = t('errors.wrongUrl');
     });
   }
-  if (state.channels.includes(value)) {
+  if (state.urls.includes(value)) {
     translate((t) => {
       state.form.error = t('errors.alreadyExists');
     });
@@ -46,18 +49,30 @@ url.addEventListener('input', (e) => {
   }
 });
 
-
 form.addEventListener('submit', (e) => {
   e.preventDefault();
-  const { channels, feed } = state;
+  const { urls } = state;
   const { value } = state.form;
-  channels.push(value);
+  urls.push(value);
   const cors = `https://cors-anywhere.herokuapp.com/${value}`;
-  axios.get(cors).then(({ data }) => feed.push(parse(data)));
+  axios.get(cors).then(({ data }) => {
+    const { channel, postsArr } = parse(data);
+
+    state.feeds.push(state.newFeeds);
+    state.newFeeds.length = 0;
+    state.newFeeds.push(channel);
+
+    state.posts.push(...state.newPosts);
+    state.newPosts.length = 0;
+    state.newPosts.unshift(..._.reverse(postsArr));
+  });
   state.form.value = null;
   state.form.valid = null;
 });
 
 watch(state.form, () => renderInput(state));
-watch(state, 'feed', () => renderFeed(state.feed));
+watch(state, 'newFeeds', () => renderFeeds(state.newFeeds));
+watch(state, 'newPosts', () => renderPosts(state.newPosts));
 watch(state.form, 'error', () => renderErrorMessage(state));
+
+updateFeed(state);

@@ -18,43 +18,41 @@ export const renderInput = (appstate) => {
 };
 
 
-const renderChannel = (channel) => {
-  const {
-    channelTitle, channelDescription, channelLink, postsArr,
-  } = channel;
-  console.log('renderChannel props', channelTitle, channelDescription, channelLink, postsArr);
-  const div = document.querySelector('#rssContainer');
-  const divChannel = document.createElement('div');
-  divChannel.classList.add('container');
-  const a = document.createElement('a');
-  a.setAttribute('href', channelLink);
-  a.textContent = channelTitle;
-  const p = document.createElement('p');
-  p.textContent = channelDescription;
-  divChannel.append(a);
-  divChannel.append(p);
-  div.append(divChannel);
-
-  const ul = document.createElement('ul');
-  ul.classList.add('list-group');
-  postsArr.forEach((item) => {
+export const renderFeeds = (feeds) => {
+  const ulFeed = document.querySelector('#channels');
+  feeds.forEach((channel) => {
+    const { channelTitle, channelDescription, channelLink } = channel;
     const li = document.createElement('li');
     li.classList.add('list-group-item');
-    const title = document.createElement('a');
-    title.setAttribute('href', item.itemLink);
-    title.textContent = item.itemTitle;
-    const description = document.createElement('p');
-    description.textContent = item.itemDescription;
-    li.append(title);
-    li.append(description);
-    ul.append(li);
+    const a = document.createElement('a');
+    a.setAttribute('href', channelLink);
+    a.textContent = channelTitle;
+    const p = document.createElement('p');
+    p.textContent = channelDescription;
+    li.append(a);
+    li.append(p);
+    ulFeed.append(li);
   });
-  div.append(ul);
 };
 
-export const renderFeed = (feed) => {
-  feed.forEach((channel) => {
-    renderChannel(channel);
+export const renderPosts = (posts) => {
+  const badgesToRemove = document.getElementsByClassName('badge');
+  if (badgesToRemove.length > 0) {
+    [...badgesToRemove].forEach((badge) => badge.remove());
+  }
+  const ulPosts = document.querySelector('#posts');
+  posts.forEach((post) => {
+    const { itemTitle, itemDescription, itemLink } = post;
+    const li = document.createElement('li');
+    li.classList.add('list-group-item');
+    const a = document.createElement('a');
+    a.setAttribute('href', itemLink);
+    a.innerHTML = `<span class="badge badge-secondary">New</span> ${itemTitle}`;
+    const p = document.createElement('p');
+    p.textContent = itemDescription;
+    li.append(a);
+    li.append(p);
+    ulPosts.prepend(li);
   });
 };
 
