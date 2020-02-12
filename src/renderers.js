@@ -56,8 +56,8 @@ export const renderPosts = (posts) => {
   });
 };
 
-export const renderErrorMessage = (state) => {
-  const errorDiv = document.querySelector('#errors');
-  const message = state.form.error ? `<div class="alert alert-primary role="alert">${state.form.error}</div>` : null;
-  errorDiv.innerHTML = message;
+export const renderNotificationMessage = (state) => {
+  const messageDiv = document.querySelector('#message');
+  const message = state.form.notification ? `<div class="alert alert-primary role="alert">${state.form.notification}</div>` : null;
+  messageDiv.innerHTML = message;
 };

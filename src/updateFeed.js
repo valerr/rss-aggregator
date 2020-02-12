@@ -1,5 +1,5 @@
 import axios from 'axios';
-import _ from 'lodash';
+import { concat } from 'lodash';
 import parse from './parser';
 
 const getPostLinks = (posts) => {
@@ -11,7 +11,7 @@ const getPostLinks = (posts) => {
 const updateFeed = (appState) => {
   const promises = appState.urls.map((url) => axios.get(`https://cors-anywhere.herokuapp.com/${url}`));
   const time = 5000;
-  const links = _.concat(getPostLinks(appState.posts), getPostLinks(appState.newPosts));
+  const links = concat(getPostLinks(appState.posts), getPostLinks(appState.newPosts));
   Promise.all(promises).then((res) => {
     res.forEach(({ data }) => {
       const { postsArr } = parse(data);

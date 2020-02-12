@@ -2,9 +2,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { watch } from 'melanke-watchjs';
 import validator from 'validator';
 import axios from 'axios';
-import _ from 'lodash';
+import { reverse } from 'lodash';
 import {
-  renderInput, renderFeeds, renderPosts, renderErrorMessage,
+  renderInput, renderFeeds, renderPosts, renderNotificationMessage,
 } from './renderers';
 import parse from './parser';
 import translate from './locales/translate';
@@ -14,7 +14,7 @@ const state = {
   form: {
     valid: null,
     value: null,
-    error: null,
+    notification: null,
   },
   urls: [], // input url
   feeds: [], // [{ channelTitle, channelDescription, channelLink }, {}, ...]
@@ -36,16 +36,16 @@ url.addEventListener('input', (e) => {
 
   if (!validator.isURL(value)) {
     translate((t) => {
-      state.form.error = t('errors.wrongUrl');
+      state.form.notification = t('notifications.wrongUrl');
     });
   }
   if (state.urls.includes(value)) {
     translate((t) => {
-      state.form.error = t('errors.alreadyExists');
+      state.form.notification = t('notifications.alreadyExists');
     });
   }
   if (state.form.valid) {
-    state.form.error = '';
+    state.form.notification = '';
   }
 });
 
@@ -54,6 +54,9 @@ form.addEventListener('submit', (e) => {
   const { urls } = state;
   const { value } = state.form;
   urls.push(value);
+  translate((t) => {
+    state.form.notification = t('notifications.loading');
+  });
   const cors = `https://cors-anywhere.herokuapp.com/${value}`;
   axios.get(cors).then(({ data }) => {
     const { channel, postsArr } = parse(data);
@@ -64,8 +67,16 @@ form.addEventListener('submit', (e) => {
 
     state.posts.push(...state.newPosts);
     state.newPosts.length = 0;
-    state.newPosts.unshift(..._.reverse(postsArr));
-  });
+    state.newPosts.unshift(...reverse(postsArr));
+    translate((t) => {
+      state.form.notification = t('notifications.finished');
+    });
+  })
+    .catch(() => {
+      translate((t) => {
+        state.form.notification = t('notifications.failedLoading');
+      });
+    });
   state.form.value = null;
   state.form.valid = null;
 });
@@ -73,6 +84,6 @@ form.addEventListener('submit', (e) => {
 watch(state.form, () => renderInput(state));
 watch(state, 'newFeeds', () => renderFeeds(state.newFeeds));
 watch(state, 'newPosts', () => renderPosts(state.newPosts));
-watch(state.form, 'error', () => renderErrorMessage(state));
+watch(state.form, 'notification', () => renderNotificationMessage(state));
 
 updateFeed(state);
