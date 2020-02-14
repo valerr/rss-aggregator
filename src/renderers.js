@@ -53,9 +53,7 @@ export const renderPosts = (posts) => {
   const postLinksElements = ulPosts.getElementsByTagName('a');
   const postLinks = [];
   [...postLinksElements].forEach((elem) => postLinks.push(elem.getAttribute('href')));
-  console.log('postLinks', postLinks);
   const postsToRender = posts.filter((post) => !postLinks.includes(post.link));
-  console.log('filtered', postsToRender);
 
   postsToRender.forEach((post) => {
     const { title, description, link } = post;
