@@ -16,9 +16,7 @@ const app = () => {
     },
     urls: [], // input url
     feeds: [], // [{ channelTitle, channelDescription, channelLink }, {}, ...]
-    newFeeds: [],
     posts: [], // [{ feedLink, itemTitle, itemDescription, itemLink }, {}, ...]
-    newPosts: [],
   };
 
   const isValid = (url) => validator.isURL(url) && !state.urls.includes(url);
@@ -56,8 +54,8 @@ const app = () => {
   });
 
   watch(state.form, () => renderInput(state));
-  watch(state, 'newFeeds', () => renderFeeds(state.newFeeds));
-  watch(state, 'newPosts', () => renderPosts(state.newPosts));
+  watch(state, 'feeds', () => renderFeeds(state.feeds));
+  watch(state, 'posts', () => renderPosts(state.posts));
   watch(state.form, 'notification', () => renderNotificationMessage(state));
 
   updateFeed(state);

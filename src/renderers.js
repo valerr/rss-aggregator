@@ -20,10 +20,18 @@ export const renderInput = (appstate) => {
 
 export const renderFeeds = (feeds) => {
   const ulFeed = document.querySelector('#channels');
-  feeds.forEach((channel) => {
-    const { title, description, link } = channel;
+  const channelIdElements = ulFeed.getElementsByTagName('li');
+  const channelIds = [];
+  [...channelIdElements].forEach((elem) => channelIds.push(elem.getAttribute('id')));
+  const channelsToRender = feeds.filter((channel) => !channelIds.includes(channel.feedId));
+
+  channelsToRender.forEach((channel) => {
+    const {
+      title, description, link, feedId,
+    } = channel;
     const li = document.createElement('li');
     li.classList.add('list-group-item');
+    li.setAttribute('id', feedId);
     const a = document.createElement('a');
     a.setAttribute('href', link);
     a.textContent = title;
@@ -40,8 +48,16 @@ export const renderPosts = (posts) => {
   if (badgesToRemove.length > 0) {
     [...badgesToRemove].forEach((badge) => badge.remove());
   }
+
   const ulPosts = document.querySelector('#posts');
-  posts.forEach((post) => {
+  const postLinksElements = ulPosts.getElementsByTagName('a');
+  const postLinks = [];
+  [...postLinksElements].forEach((elem) => postLinks.push(elem.getAttribute('href')));
+  console.log('postLinks', postLinks);
+  const postsToRender = posts.filter((post) => !postLinks.includes(post.link));
+  console.log('filtered', postsToRender);
+
+  postsToRender.forEach((post) => {
     const { title, description, link } = post;
     const li = document.createElement('li');
     li.classList.add('list-group-item');
