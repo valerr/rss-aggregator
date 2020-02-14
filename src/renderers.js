@@ -21,14 +21,14 @@ export const renderInput = (appstate) => {
 export const renderFeeds = (feeds) => {
   const ulFeed = document.querySelector('#channels');
   feeds.forEach((channel) => {
-    const { channelTitle, channelDescription, channelLink } = channel;
+    const { title, description, link } = channel;
     const li = document.createElement('li');
     li.classList.add('list-group-item');
     const a = document.createElement('a');
-    a.setAttribute('href', channelLink);
-    a.textContent = channelTitle;
+    a.setAttribute('href', link);
+    a.textContent = title;
     const p = document.createElement('p');
-    p.textContent = channelDescription;
+    p.textContent = description;
     li.append(a);
     li.append(p);
     ulFeed.append(li);
@@ -42,14 +42,14 @@ export const renderPosts = (posts) => {
   }
   const ulPosts = document.querySelector('#posts');
   posts.forEach((post) => {
-    const { itemTitle, itemDescription, itemLink } = post;
+    const { title, description, link } = post;
     const li = document.createElement('li');
     li.classList.add('list-group-item');
     const a = document.createElement('a');
-    a.setAttribute('href', itemLink);
-    a.innerHTML = `<span class="badge badge-secondary">New</span> ${itemTitle}`;
+    a.setAttribute('href', link);
+    a.innerHTML = `<span class="badge badge-secondary">New</span> ${title}`;
     const p = document.createElement('p');
-    p.textContent = itemDescription;
+    p.textContent = description;
     li.append(a);
     li.append(p);
     ulPosts.prepend(li);

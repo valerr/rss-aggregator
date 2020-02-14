@@ -2,20 +2,21 @@ export default (rss) => {
   const parser = new DOMParser();
   const parsed = parser.parseFromString(rss, 'application/xml');
   const items = parsed.querySelectorAll('item');
-  const channelTitle = parsed.querySelector('title').textContent;
-  const channelDescription = parsed.querySelector('description').textContent;
-  const channelLink = parsed.querySelector('link').textContent;
   const postsArr = [];
   items.forEach((item) => {
-    const feedLink = channelLink;
-    const itemTitle = item.querySelector('title').textContent;
-    const itemDescription = item.querySelector('description').textContent;
-    const itemLink = item.querySelector('link').textContent;
+    const feedLink = parsed.querySelector('link').textContent;
+    const title = item.querySelector('title').textContent;
+    const description = item.querySelector('description').textContent;
+    const link = item.querySelector('link').textContent;
     postsArr.push({
-      feedLink, itemTitle, itemDescription, itemLink,
+      feedLink, title, description, link,
     });
   });
-  const channel = { channelTitle, channelDescription, channelLink };
+  const channel = {
+    title: parsed.querySelector('title').textContent,
+    description: parsed.querySelector('description').textContent,
+    link: parsed.querySelector('link').textContent,
+  };
   return {
     channel, postsArr,
   };
