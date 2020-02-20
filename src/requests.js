@@ -4,8 +4,7 @@ import { reverse, uniqueId } from 'lodash';
 import parse from './parser';
 
 const getPostLinks = (posts) => {
-  const links = [];
-  posts.forEach((post) => links.push(post.link));
+  const links = posts.map((post) => post.link);
   return links;
 };
 
@@ -37,6 +36,7 @@ export const addFeed = (appState, inputValue) => {
     appState.posts.unshift(...reverse(posts));
 
     appState.form.notification = 'notifications.finished';
+    appState.urls.push(inputValue);
   })
     .catch(() => {
       appState.form.notification = 'notifications.failedLoading';

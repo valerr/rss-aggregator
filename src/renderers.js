@@ -4,10 +4,7 @@ export const renderInput = (appstate) => {
   const { valid } = appstate.form;
   const url = document.getElementById('urlRss');
   const button = document.querySelector('#rssButton');
-  // if (value === null) {
-  //   url.classList.remove('is-invalid');
-  //   button.disabled = true;
-  // }
+
   if (valid) {
     url.classList.add('is-valid');
     url.classList.remove('is-invalid');

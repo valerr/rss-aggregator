@@ -18,8 +18,6 @@ const app = () => {
     posts: [], // [{ feedLink, itemTitle, itemDescription, itemLink }, {}, ...]
   };
 
-  const isValid = (url) => validator.isURL(url) && !state.urls.includes(url);
-
   const url = document.getElementById('urlRss');
   const form = document.getElementById('submitForm');
 
@@ -27,24 +25,25 @@ const app = () => {
     e.preventDefault();
     const { value } = e.target;
     state.form.value = value;
-    state.form.valid = isValid(state.form.value);
 
     if (!validator.isURL(value)) {
+      state.form.valid = false;
       state.form.notification = 'notifications.wrongUrl';
+      return;
     }
     if (state.urls.includes(value)) {
+      state.form.valid = false;
       state.form.notification = 'notifications.alreadyExists';
+      return;
     }
-    if (state.form.valid) {
-      state.form.notification = '';
-    }
+    state.form.valid = true;
+    state.form.notification = '';
   });
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const { urls } = state;
     const { value } = state.form;
-    urls.push(value);
     addFeed(state, value);
   });
 
