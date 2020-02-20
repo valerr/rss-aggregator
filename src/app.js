@@ -4,15 +4,14 @@ import validator from 'validator';
 import {
   renderInput, renderFeeds, renderPosts, renderNotificationMessage,
 } from './renderers';
-import translate from './locales/translate';
 import { updateFeed, addFeed } from './requests';
 
 const app = () => {
   const state = {
     form: {
-      valid: null,
-      value: null,
-      notification: null,
+      valid: false,
+      value: '',
+      notification: '',
     },
     urls: [], // input url
     feeds: [], // [{ channelTitle, channelDescription, channelLink }, {}, ...]
@@ -31,14 +30,10 @@ const app = () => {
     state.form.valid = isValid(state.form.value);
 
     if (!validator.isURL(value)) {
-      translate((t) => {
-        state.form.notification = t('notifications.wrongUrl');
-      });
+      state.form.notification = 'notifications.wrongUrl';
     }
     if (state.urls.includes(value)) {
-      translate((t) => {
-        state.form.notification = t('notifications.alreadyExists');
-      });
+      state.form.notification = 'notifications.alreadyExists';
     }
     if (state.form.valid) {
       state.form.notification = '';

@@ -1,11 +1,13 @@
+import i18next from './locales/translate';
+
 export const renderInput = (appstate) => {
-  const { valid, value } = appstate.form;
+  const { valid } = appstate.form;
   const url = document.getElementById('urlRss');
   const button = document.querySelector('#rssButton');
-  if (value === null) {
-    url.classList.remove('is-invalid');
-    button.disabled = true;
-  }
+  // if (value === null) {
+  //   url.classList.remove('is-invalid');
+  //   button.disabled = true;
+  // }
   if (valid) {
     url.classList.add('is-valid');
     url.classList.remove('is-invalid');
@@ -22,7 +24,7 @@ export const renderFeeds = (feeds) => {
   const ulFeed = document.querySelector('#channels');
   const channelIdElements = ulFeed.getElementsByTagName('li');
   const channelIds = [];
-  [...channelIdElements].forEach((elem) => channelIds.push(elem.getAttribute('id')));
+  [...channelIdElements].map((elem) => channelIds.push(elem.getAttribute('id')));
   const channelsToRender = feeds.filter((channel) => !channelIds.includes(channel.feedId));
 
   channelsToRender.forEach((channel) => {
@@ -52,7 +54,7 @@ export const renderPosts = (posts) => {
   const ulPosts = document.querySelector('#posts');
   const postLinksElements = ulPosts.getElementsByTagName('a');
   const postLinks = [];
-  [...postLinksElements].forEach((elem) => postLinks.push(elem.getAttribute('href')));
+  [...postLinksElements].map((elem) => postLinks.push(elem.getAttribute('href')));
   const postsToRender = posts.filter((post) => !postLinks.includes(post.link));
 
   postsToRender.forEach((post) => {
@@ -72,6 +74,6 @@ export const renderPosts = (posts) => {
 
 export const renderNotificationMessage = (state) => {
   const messageDiv = document.querySelector('#message');
-  const message = state.form.notification ? `<div class="alert alert-primary role="alert">${state.form.notification}</div>` : null;
+  const message = state.form.notification ? `<div class="alert alert-primary role="alert">${i18next.t(state.form.notification)}</div>` : null;
   messageDiv.innerHTML = message;
 };
