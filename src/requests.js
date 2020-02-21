@@ -26,21 +26,23 @@ export const updateFeed = (appState) => {
 
 export const addFeed = (appState, inputValue) => {
   appState.form.notification = 'notifications.loading';
+  appState.requestStatus = 'processing';
 
   axios.get(`https://cors-anywhere.herokuapp.com/${inputValue}`).then(({ data }) => {
     const { channel, posts } = parse(data);
-
     channel.feedId = uniqueId();
     appState.feeds.push(channel);
-
     appState.posts.unshift(...reverse(posts));
-
-    appState.form.notification = 'notifications.finished';
     appState.urls.push(inputValue);
   })
+    .then(() => {
+      appState.form.notification = 'notifications.finished';
+      appState.requestStatus = 'success';
+    })
     .catch(() => {
       appState.form.notification = 'notifications.failedLoading';
+      appState.requestStatus = 'fail';
     });
-  appState.form.value = null;
-  appState.form.valid = null;
+  appState.form.value = '';
+  appState.form.valid = false;
 };

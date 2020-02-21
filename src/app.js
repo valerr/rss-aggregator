@@ -13,15 +13,16 @@ const app = () => {
       value: '',
       notification: '',
     },
-    urls: [], // input url
+    requestStatus: 'waiting',
+    urls: [], // input urls
     feeds: [], // [{ channelTitle, channelDescription, channelLink }, {}, ...]
     posts: [], // [{ feedLink, itemTitle, itemDescription, itemLink }, {}, ...]
   };
 
-  const url = document.getElementById('urlRss');
+  const inputElement = document.getElementById('urlRss');
   const form = document.getElementById('submitForm');
 
-  url.addEventListener('input', (e) => {
+  inputElement.addEventListener('input', (e) => {
     e.preventDefault();
     const { value } = e.target;
     state.form.value = value;
@@ -42,7 +43,6 @@ const app = () => {
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const { urls } = state;
     const { value } = state.form;
     addFeed(state, value);
   });
@@ -51,6 +51,7 @@ const app = () => {
   watch(state, 'feeds', () => renderFeeds(state.feeds));
   watch(state, 'posts', () => renderPosts(state.posts));
   watch(state.form, 'notification', () => renderNotificationMessage(state));
+  watch(state, 'requestStatus', () => renderInput(state));
 
   updateFeed(state);
 };

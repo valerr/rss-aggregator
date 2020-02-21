@@ -2,17 +2,24 @@ import i18next from './locales/translate';
 
 export const renderInput = (appstate) => {
   const { valid } = appstate.form;
-  const url = document.getElementById('urlRss');
+  const input = document.querySelector('#urlRss');
   const button = document.querySelector('#rssButton');
 
-  if (valid) {
-    url.classList.add('is-valid');
-    url.classList.remove('is-invalid');
-    button.disabled = false;
-  } else {
-    url.classList.add('is-invalid');
-    url.classList.remove('is-valid');
+  if (appstate.requestStatus === 'processing') {
     button.disabled = true;
+    input.setAttribute('disabled', 'true');
+  } else {
+    input.removeAttribute('disabled');
+
+    if (valid) {
+      input.classList.add('is-valid');
+      input.classList.remove('is-invalid');
+      button.disabled = false;
+    } else {
+      input.classList.add('is-invalid');
+      input.classList.remove('is-valid');
+      button.disabled = true;
+    }
   }
 };
 
@@ -20,8 +27,7 @@ export const renderInput = (appstate) => {
 export const renderFeeds = (feeds) => {
   const ulFeed = document.querySelector('#channels');
   const channelIdElements = ulFeed.getElementsByTagName('li');
-  const channelIds = [];
-  [...channelIdElements].map((elem) => channelIds.push(elem.getAttribute('id')));
+  const channelIds = [...channelIdElements].map((elem) => elem.getAttribute('id'));
   const channelsToRender = feeds.filter((channel) => !channelIds.includes(channel.feedId));
 
   channelsToRender.forEach((channel) => {
@@ -50,8 +56,7 @@ export const renderPosts = (posts) => {
 
   const ulPosts = document.querySelector('#posts');
   const postLinksElements = ulPosts.getElementsByTagName('a');
-  const postLinks = [];
-  [...postLinksElements].map((elem) => postLinks.push(elem.getAttribute('href')));
+  const postLinks = [...postLinksElements].map((elem) => elem.getAttribute('href'));
   const postsToRender = posts.filter((post) => !postLinks.includes(post.link));
 
   postsToRender.forEach((post) => {
