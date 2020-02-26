@@ -3,13 +3,15 @@ import axios from 'axios';
 import { reverse, uniqueId } from 'lodash';
 import parse from './parser';
 
+const proxy = 'https://cors-anywhere.herokuapp.com/';
+
 const getPostLinks = (posts) => {
   const links = posts.map((post) => post.link);
   return links;
 };
 
 export const updateFeed = (appState) => {
-  const promises = appState.urls.map((url) => axios.get(`https://cors-anywhere.herokuapp.com/${url}`));
+  const promises = appState.urls.map((url) => axios.get(`${proxy}${url}`));
   const time = 5000;
   Promise.all(promises).then((res) => {
     res.forEach(({ data }) => {
@@ -28,7 +30,7 @@ export const addFeed = (appState, inputValue) => {
   appState.form.notification = 'notifications.loading';
   appState.requestStatus = 'processing';
 
-  axios.get(`https://cors-anywhere.herokuapp.com/${inputValue}`).then(({ data }) => {
+  axios.get(`${proxy}${inputValue}`).then(({ data }) => {
     const { channel, posts } = parse(data);
     channel.feedId = uniqueId();
     appState.feeds.push(channel);
