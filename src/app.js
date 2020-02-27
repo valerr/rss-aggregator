@@ -21,6 +21,23 @@ const app = () => {
 
   const inputElement = document.getElementById('urlRss');
   const form = document.getElementById('submitForm');
+  const exampleLinks = document.getElementsByClassName('example');
+
+  [...exampleLinks].forEach((link) => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const { href } = link;
+      inputElement.setAttribute('value', href);
+      if (state.urls.includes(href)) {
+        state.form.valid = false;
+        state.form.notification = 'notifications.alreadyExists';
+      } else {
+        state.form.valid = true;
+        state.form.value = href;
+        state.form.notification = '';
+      }
+    });
+  });
 
   inputElement.addEventListener('input', (e) => {
     e.preventDefault();
