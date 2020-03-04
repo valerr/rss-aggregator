@@ -15,8 +15,8 @@ const app = () => {
     },
     requestStatus: 'waiting',
     urls: [], // input urls
-    feeds: [], // [{ channelTitle, channelDescription, channelLink }, {}, ...]
-    posts: [], // [{ feedLink, itemTitle, itemDescription, itemLink }, {}, ...]
+    feeds: [], // [{ title, description, link }, {}, ...]
+    posts: [], // [{ feedLink, title, description, link }, {}, ...]
   };
 
   const inputElement = document.getElementById('urlRss');
@@ -64,7 +64,10 @@ const app = () => {
     addFeed(state, value);
   });
 
-  watch(state.form, () => renderInput(state));
+  watch(state.form, 'valid', () => renderInput(state));
+  watch(state.form, 'value', () => {
+    inputElement.value = state.form.value;
+  });
   watch(state, 'feeds', () => renderFeeds(state.feeds));
   watch(state, 'posts', () => renderPosts(state.posts));
   watch(state.form, 'notification', () => renderNotificationMessage(state));

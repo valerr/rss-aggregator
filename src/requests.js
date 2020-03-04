@@ -1,14 +1,9 @@
 /* eslint-disable no-param-reassign */
 import axios from 'axios';
-import { reverse, uniqueId } from 'lodash';
+import { reverse, uniqueId, differenceBy } from 'lodash';
 import parse from './parser';
 
 const proxy = 'https://cors-anywhere.herokuapp.com/';
-
-const getPostLinks = (posts) => {
-  const links = posts.map((post) => post.link);
-  return links;
-};
 
 export const updateFeed = (appState) => {
   const promises = appState.urls.map((url) => axios.get(`${proxy}${url}`));
@@ -16,8 +11,7 @@ export const updateFeed = (appState) => {
   Promise.all(promises).then((res) => {
     res.forEach(({ data }) => {
       const { posts } = parse(data);
-      const links = getPostLinks(appState.posts);
-      const updated = posts.filter((item) => !links.includes(item.link));
+      const updated = differenceBy(posts, appState.posts, 'link');
       if (updated.length > 0) {
         appState.posts.unshift(...updated);
       }
@@ -40,11 +34,11 @@ export const addFeed = (appState, inputValue) => {
     .then(() => {
       appState.form.notification = 'notifications.finished';
       appState.requestStatus = 'success';
+      appState.form.value = '';
+      appState.form.valid = false;
     })
     .catch(() => {
       appState.form.notification = 'notifications.failedLoading';
-      appState.requestStatus = 'fail';
+      appState.requestStatus = 'failed';
     });
-  appState.form.value = '';
-  appState.form.valid = false;
 };
